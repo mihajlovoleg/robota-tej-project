@@ -11,7 +11,7 @@ class HomePageView(View):
         
         offers = Offer.objects.all()
 
-        # Завантажуємо форму фільтрації
+        
         form = OfferFilterForm(request.GET)
 
         
@@ -35,7 +35,7 @@ class HomePageView(View):
                     Q(max_salary__gte=salary_min)  
                 )
 
-            # Фільтрація зарплати - максимальна
+            
             if salary_max is not None:
                 offers = offers.filter(
                     Q(max_salary__lte=salary_max) |
@@ -56,22 +56,22 @@ class AddOfferView(View):
     def post(self, request, *args, **kwargs):
         form = JobOffersForm(request.POST)
         if form.is_valid():
-            # Витягуємо дані з форми
+            
             query = form.cleaned_data['query']
             limit = form.cleaned_data['limit']
             delay = form.cleaned_data['delay']
 
-            # ініціалізація парсерів
+            
             pracuj_parser = PracujPlScraperService(query)
             olx_parser = OlxScraperService(query)
             justjoin_parser = JustJoinItScraperService(query)
 
-            # Отримуємо офери і зберігаємо їх у базі
+            
             pracuj_offers = pracuj_parser.scrape_jobs(limit, delay)
             olx_offers = olx_parser.scrape_jobs(limit, delay)
             justjoin_offers = justjoin_parser.scrape_jobs(limit, delay)
 
-            # Збереження
+            
             all_offers = pracuj_offers + olx_offers + justjoin_offers
             unique_offers = {offer['url']: offer for offer in all_offers}.values()
 
@@ -88,8 +88,8 @@ class AddOfferView(View):
                     seniority=offer['seniority']
                 )
 
-            # Якщо все добре, повертаємо JSON-результат для AJAX
+            
             return JsonResponse({'message': 'Офер успішно додано.'})
 
-        # Якщо форма не валідна, також повертаємо помилку в JSON
+        
         return JsonResponse({'error': 'Форма невалідна.'}, status=400)
