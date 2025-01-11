@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Головна</title>
+</head>
+<body>
+    <header>
+        
+        <a href="{% url 'add_offer' %}">Add new offer</a>
+    </header>
+
+    <h1>Оферти роботи</h1>
+
+    
+    {% if form.errors %}
+        <div class="form-errors">
+            <ul>
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
+    
+    <form method="get">
+        <label for="location">Location:</label>
+        <input type="text" name="location" value="{{ form.location.value }}">
+
+        <label for="contract_type">Contract type:</label>
+        <input type="text" name="contract_type" value="{{ form.contract_type.value }}">
+
+        <label for="salary_min">Min salary:</label>
+        <input type="number" name="salary_min" value="{{ form.salary_min.value }}">
+
+        <label for="salary_max">Max salary:</label>
+        <input type="number" name="salary_max" value="{{ form.salary_max.value }}">
+
+        <div class="form-group">
+            <label for="seniority">Level of seniority</label>
+            {{ form.seniority }}
+        </div>
+
+        <button type="submit">Submit filters</button>
+    </form>
+
+    <!-- Список вакансій -->
+    <div class="job-listings">
+        {% if offers %}
+            {% for offer in offers %}
+                <div class="job-card">
+                    <h3>{{ offer.offer_title }}</h3>
+                    <p><strong>Company:</strong> {{ offer.company_name }}</p>
+    
+                    {% if offer.location %}
+                        <p><strong>Location:</strong> {{ offer.location }}</p>
+                    {% endif %}
+    
+                    {% if offer.min_salary and offer.max_salary %}
+                        <p><strong>Salary:</strong>
+                            
+                            {{ offer.min_salary }} - {{ offer.max_salary }} PLN
+                            
+                        </p>
+                    {% endif %}
+    
+                    {% if offer.contract_type %}
+                        <p><strong>Contract type:</strong> {{ offer.contract_type }}</p>
+                    {% endif %}
+                    {% if offer.employment_type %}
+                        <p><strong>Employment type:</strong> {{ offer.employment_type }}</p>
+                    {% endif %}
+                    {% if offer.seniority %}
+                        <p><strong>Required seniority:</strong> {{ offer.seniority }}</p>
+                    {% endif %}
+                    <a href="{{ offer.link }}" target="_blank">Follow the link</a>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No offers for this filters.</p>
+        {% endif %}
+    </div>
+
+</body>
+</html>
